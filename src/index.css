@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+/* Custom Layout */
+.page-container {
+  padding: 1.5rem;
+}
+
+@media (min-width: 1536px) {
+  main > div > div {
+    max-width: 1536px;
+    margin: 0 auto;
+  }
+}
+
+/* Custom Table Styling */
+table th {
+  @apply font-semibold tracking-wide uppercase text-gray-600;
+}
+
+table td {
+  @apply text-gray-800;
+}
+
+table tbody tr {
+  @apply border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200;
+}
+
+/* Sidebar - Clean Look */
+nav,
+aside,
+[class*="sidebar"] {
+  @apply border-none;
+}
+
+.bg-white.shadow-lg {
+  @apply shadow-md;
+}
+
+/* Custom Thin Scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(209 213 219) rgb(243 244 246);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgb(243 244 246);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgb(209 213 219);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgb(156 163 175);
+}
