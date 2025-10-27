@@ -12,18 +12,6 @@
   }
 }
 
-/* Custom Table Styling */
-table th {
-  @apply font-semibold tracking-wide uppercase text-gray-600;
-}
-
-table td {
-  @apply text-gray-800;
-}
-
-table tbody tr {
-  @apply border-b border-gray-200 hover:bg-gray-50 transition-colors duration-200;
-}
 
 /* Sidebar - Clean Look */
 nav,

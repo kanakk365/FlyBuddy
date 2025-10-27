@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Check, X } from 'lucide-react'
 import MainLayout from '../common/MainLayout'
 
 function UserDetails() {
@@ -97,40 +98,45 @@ function UserDetails() {
       case 'tickets':
         return (
           <div className="overflow-x-auto">
-            <table className="w-full" style={{ fontSize: '1.8em' }}>
-              <thead className="bg-gray-50">
+            <table className="w-full border-separate border-spacing-0">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Airline</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Location</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Date</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">Airline</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Location</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">Status</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {ticketsData.map((ticket) => (
-                  <tr key={ticket.id}>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900">{ticket.airline}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{ticket.location}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{ticket.date}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-base font-semibold ${
-                        ticket.status === 'Completed' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {ticket.status === 'Completed' ? (
-                          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                        {ticket.status}
-                      </span>
-                    </td>
-                  </tr>
+              <tbody className="bg-white">
+                {ticketsData.map((ticket, index) => (
+                  <React.Fragment key={ticket.id}>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{ticket.airline}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{ticket.location}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{ticket.date}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-base ${
+                          ticket.status === 'Completed'
+                            ? ' text-green-500'
+                            : ' text-red-500'
+                        }`}>
+                          {ticket.status === 'Completed' ? (
+                            <Check className="w-4 h-4 mr-2" />
+                          ) : (
+                            <X className="w-4 h-4 mr-2" />
+                          )}
+                          {ticket.status}
+                        </span>
+                      </td>
+                    </tr>
+                    {index < ticketsData.length - 1 && (
+                      <tr>
+                        <td colSpan="4" className="px-6 py-0">
+                          <hr className="border-gray-200" />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -140,33 +146,39 @@ function UserDetails() {
       case 'subscription':
         return (
           <div className="overflow-x-auto">
-            <table className="w-full" style={{ fontSize: '1.8em' }}>
-              <thead className="bg-gray-50">
+            <table className="w-full border-separate border-spacing-0">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Plan Type</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Status</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Start Date</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Expiry Date</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Payment</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">Plan Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Start Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Expiry Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">Payment</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {subscriptionData.map((subscription) => (
-                  <tr key={subscription.id}>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900">{subscription.planType}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-base font-semibold ${
-                        subscription.status === 'Active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {subscription.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{subscription.startDate}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{subscription.expiryDate}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900">{subscription.payment}</td>
-                  </tr>
+              <tbody className="bg-white">
+                {subscriptionData.map((subscription, index) => (
+                  <React.Fragment key={subscription.id}>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{subscription.planType}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm text-neutral-500
+                          `}>
+                          {subscription.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{subscription.startDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{subscription.expiryDate}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{subscription.payment}</td>
+                    </tr>
+                    {index < subscriptionData.length - 1 && (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-0">
+                          <hr className="border-gray-200" />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -176,41 +188,48 @@ function UserDetails() {
       case 'matches':
         return (
           <div className="overflow-x-auto">
-            <table className="w-full" style={{ fontSize: '1.8em' }}>
-              <thead className="bg-gray-50">
+            <table className="w-full border-separate border-spacing-0">
+              <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Destination</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Matched User</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Date</th>
-                  <th className="px-4 py-3 text-left text-xl font-bold text-gray-800 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">Destination</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Matched User</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">Status</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {matchesData.map((match) => (
-                  <tr key={match.id}>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg font-semibold text-gray-900">
-                      <div className="flex items-center">
-                        <svg className="w-5 h-5 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        {match.destination}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{match.matchedUser}</td>
-                    <td className="px-4 py-3 whitespace-nowrap text-lg text-gray-600">{match.date}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-base font-semibold ${
-                        match.status === 'Connected' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        <div className={`w-3 h-3 rounded-full mr-2 ${
-                          match.status === 'Connected' ? 'bg-green-500' : 'bg-yellow-500'
-                        }`}></div>
-                        {match.status}
-                      </span>
-                    </td>
-                  </tr>
+              <tbody className="bg-white">
+                {matchesData.map((match, index) => (
+                  <React.Fragment key={match.id}>
+                    <tr className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <div className="flex items-center">
+                        <span className="text-blue-500 mr-3">✈️</span>
+                          {match.destination}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{match.matchedUser}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">{match.date}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-base ${
+                          match.status === 'Connected'
+                            ? ' text-green-500'
+                            : ' text-yellow-500'
+                        }`}>
+                          <div className={`w-3 h-3 rounded-full mr-2 ${
+                            match.status === 'Connected' ? 'bg-green-500' : 'bg-yellow-500'
+                          }`}></div>
+                          {match.status}
+                        </span>
+                      </td>
+                    </tr>
+                    {index < matchesData.length - 1 && (
+                      <tr>
+                        <td colSpan="4" className="px-6 py-0">
+                          <hr className="border-gray-200" />
+                        </td>
+                      </tr>
+                    )}
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -238,14 +257,14 @@ function UserDetails() {
                   </svg>
                 </button>
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">User Details</h1>
+                  <h1 className="text-2xl text-gray-900">User Details</h1>
                   <p className="text-sm text-gray-500 mt-1 italic">View all the details about the user here</p>
                 </div>
               </div>
             </div>
 
             {/* User Summary Card */}
-            <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-8 mb-8">
+            <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-neutral-300 p-8 mb-8">
               <div className="flex items-center gap-8">
                 {/* User Avatar */}
                 <div className="w-20 h-20 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -258,41 +277,31 @@ function UserDetails() {
                 
                 {/* User Information - Two Rows */}
                 <div className="flex-1">
-                  <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-base mb-3">
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Name-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Phone number -</span>
-                      <span className="font-semibold text-gray-900">{userInfo.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Joined On -</span>
-                      <span className="font-semibold text-gray-900">{userInfo.joined}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">City-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.city}</span>
-                    </div>
+                  <div className="text-base mb-3">
+                    <span className="text-gray-900">Name-</span>
+                    <span className=" text-gray-900">{userInfo.name}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">Phone number -</span>
+                    <span className=" text-gray-900">{userInfo.phone}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">Joined On -</span>
+                    <span className=" text-gray-900">{userInfo.joined}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">City-</span>
+                    <span className=" text-gray-900">{userInfo.city}</span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-8 gap-y-2 text-base">
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">E mail ID-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.email}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Plan-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.plan}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Tickets Uploaded-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.ticketsUploaded}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <span className="text-gray-900 font-medium">Status-</span>
-                      <span className="font-semibold text-gray-900">{userInfo.status}</span>
-                    </div>
+                  <div className="text-base">
+                    <span className="text-gray-900">E mail ID-</span>
+                    <span className=" text-gray-900">{userInfo.email}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">Plan-</span>
+                    <span className=" text-gray-900">{userInfo.plan}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">Tickets Uploaded-</span>
+                    <span className=" text-gray-900">{userInfo.ticketsUploaded}</span>
+                    <span className="mx-4 text-gray-400">•</span>
+                    <span className="text-gray-900">Status-</span>
+                    <span className=" text-gray-900">{userInfo.status}</span>
                   </div>
                 </div>
               </div>
@@ -300,27 +309,28 @@ function UserDetails() {
 
             {/* More Details Card */}
             <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-8 mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-8">More Details</h3>
+              <h3 className="text-2xl text-gray-900 mb-4">More Details</h3>
+              <hr className="border-gray-200 mb-8" />
               <div className="grid grid-cols-3 gap-x-16 gap-y-8">
                 <div>
-                  <label className="text-base text-gray-600 block mb-2 font-medium">Plan Details</label>
-                  <p className="text-lg font-semibold text-gray-900">{moreDetails.planDetails}</p>
+                  <label className="text-sm text-neutral-500 block mb-2 ">Plan Details</label>
+                  <p className="text-base  text-gray-900">{moreDetails.planDetails}</p>
                 </div>
                 <div>
-                  <label className="text-base text-gray-600 block mb-2 font-medium">Chats Started</label>
-                  <p className="text-lg font-semibold text-gray-900">{moreDetails.chatsStarted}</p>
+                  <label className="text-sm text-neutral-500 block mb-2">Chats Started</label>
+                  <p className="text-base  text-gray-900">{moreDetails.chatsStarted}</p>
                 </div>
                 <div>
-                  <label className="text-base text-gray-600 block mb-2 font-medium">Matches Found</label>
-                  <p className="text-lg font-semibold text-gray-900">{moreDetails.matchesFound}</p>
+                  <label className="text-sm text-neutral-500 block mb-2 ">Matches Found</label>
+                  <p className="text-base  text-gray-900">{moreDetails.matchesFound}</p>
                 </div>
                 <div>
-                  <label className="text-base text-gray-600 block mb-2 font-medium">Last Login</label>
-                  <p className="text-lg font-semibold text-gray-900">{moreDetails.lastLogin}</p>
+                  <label className="text-sm text-neutral-500 block mb-2">Last Login</label>
+                  <p className="text-base  text-gray-900">{moreDetails.lastLogin}</p>
                 </div>
                 <div>
-                  <label className="text-base text-gray-600 block mb-2 font-medium">Recent Activity</label>
-                  <p className="text-lg font-semibold text-gray-900">{moreDetails.recentActivity}</p>
+                  <label className="text-sm text-neutral-500 block mb-2">Recent Activity</label>
+                  <p className="text-base  text-gray-900">{moreDetails.recentActivity}</p>
                 </div>
               </div>
             </div>
@@ -338,9 +348,9 @@ function UserDetails() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`py-6 px-2 border-b-2 font-semibold text-lg transition-colors ${
+                      className={`py-6 px-2 border-b-2 text-base transition-colors ${
                         activeTab === tab.id
-                          ? 'border-blue-500 text-blue-600'
+                          ? 'border-[#abbcd6] '
                           : 'border-transparent text-gray-500 hover:text-gray-700'
                       }`}
                     >

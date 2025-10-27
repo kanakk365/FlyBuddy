@@ -85,7 +85,7 @@ function Users() {
             <div className="mb-6">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900">All Users</h1>
+                  <h1 className="text-3xl text-gray-900">All Users</h1>
                   <p className="text-gray-600 mt-1">
                     Manage all registered users, their plans, and uploaded tickets.
                   </p>
@@ -100,7 +100,7 @@ function Users() {
                       placeholder="Search"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-64 pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-64 pl-10 pr-4 py-1.5 border border-neutral-300 focus:outline-neutral-300 rounded-lg  focus:border-transparent"
                     />
                     <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -110,7 +110,7 @@ function Users() {
                   {/* Filters Button */}
                   <button
                     onClick={() => setShowFilters(true)}
-                    className="flex items-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors relative"
+                    className="flex items-center px-4 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors relative"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
@@ -127,9 +127,9 @@ function Users() {
             </div>
 
             {/* Users Table */}
-            <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden">
+            <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden p-4">
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full border-separate border-spacing-0">
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">Name</th>
@@ -140,27 +140,24 @@ function Users() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {currentUsers.map((user) => (
-                      <tr key={user.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {currentUsers.map((user, index) => (
+                      <tr key={user.id} className={`hover:bg-gray-50 ${index === 0 ? 'pt-4' : ''}`}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                           {user.name}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                           {user.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                           {user.joined}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                           {user.plan}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
                           <button
                             onClick={() => handleViewUser(user.id)}
-                            className="px-6 py-2 text-white rounded-full text-sm font-medium"
-                            style={{
-                              background: 'linear-gradient(to right, #ABBCD6, #ACBED7)'
-                            }}
+                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
                           >
                             View
                           </button>
@@ -176,14 +173,11 @@ function Users() {
                 <div className="text-sm text-gray-500">
                   Showing {startIndex + 1} of {filteredUsers.length}
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center  divide-x divide-neutral-500">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: '#ABBCD6'
-                    }}
+                    className="p-2 rounded-l-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -192,10 +186,7 @@ function Users() {
                   <button
                     onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: '#ABBCD6'
-                    }}
+                    className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
