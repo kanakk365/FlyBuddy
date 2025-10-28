@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ChevronLeft } from 'lucide-react'
 import MainLayout from '../common/MainLayout'
 
 function EditRole() {
@@ -46,60 +47,64 @@ function EditRole() {
               <div className="flex items-center mb-6">
                 <button
                   onClick={() => navigate('/role-details')}
-                  className="p-2 rounded-lg hover:bg-gray-100 mr-4"
+                  className="p-3 rounded-xl hover:bg-gray-100 mr-6 transition-colors"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
+                  <ChevronLeft className="w-6 h-6" />
                 </button>
-                <h1 className="text-3xl font-bold text-gray-900">Edit Role details- {formData.roleAssigned}</h1>
+                <div>
+                  <h1 className="text-3xl font-medium text-gray-900">
+                    Edit Role - {formData.roleAssigned}
+                  </h1>
+                  <p className="text-lg text-gray-600 mt-2">
+                    Modify role information and permissions
+                  </p>
+                </div>
               </div>
             <form onSubmit={handleSubmit}>
               <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-6">Basic details</h3>
-                
+
+                <hr className="border-gray-200 mb-6" />
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Column */}
                   <div className="space-y-6">
                     {/* Assigned Member */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Assigned Member</label>
+                      <label className="block text-sm font-medium text-black mb-4">Assigned Member</label>
                       <input
                         type="text"
                         value={formData.assignedMember}
                         onChange={(e) => handleInputChange('assignedMember', e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
+                        placeholder="Enter member name"
+                        className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg focus:outline-none transition-colors"
                       />
                     </div>
 
                     {/* Email Id */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Email Id</label>
+                      <label className="block text-sm font-medium text-black mb-4">Email Id</label>
                       <input
                         type="email"
                         value={formData.emailId}
                         onChange={(e) => handleInputChange('emailId', e.target.value)}
-                        className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
+                        placeholder="Enter email address"
+                        className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg focus:outline-none transition-colors"
                       />
                     </div>
 
                     {/* Gender */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                      <div className="relative">
-                        <select
-                          value={formData.gender}
-                          onChange={(e) => handleInputChange('gender', e.target.value)}
-                          className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors appearance-none"
-                        >
-                          {genderOptions.map((option) => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
-                        <svg className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </div>
+                      <label className="block text-sm font-medium text-black mb-4">Gender</label>
+                      <select
+                        value={formData.gender}
+                        onChange={(e) => handleInputChange('gender', e.target.value)}
+                        className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg focus:outline-none transition-colors"
+                      >
+                        {genderOptions.map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
@@ -107,23 +112,23 @@ function EditRole() {
                   <div className="space-y-6">
                     {/* Role Assigned */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Role Assigned</label>
+                      <label className="block text-sm font-medium text-black mb-4">Role Assigned</label>
                       <input
                         type="text"
                         value={formData.roleAssigned}
                         readOnly
-                        className="w-full px-3 py-2 bg-gray-100 rounded-lg text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg text-gray-500 cursor-not-allowed"
                       />
                     </div>
 
                     {/* Phone Number */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                      <label className="block text-sm font-medium text-black mb-4">Phone Number</label>
                       <input
                         type="text"
                         value={formData.phoneNumber}
                         readOnly
-                        className="w-full px-3 py-2 bg-gray-100 rounded-lg text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg text-gray-500 cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -131,33 +136,35 @@ function EditRole() {
 
                 {/* Description - Full width */}
                 <div className="mt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description (content)</label>
+                  <label className="block text-sm font-medium text-black mb-4">Description (content)</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
+                    placeholder="Enter role description"
                     rows={4}
-                    className="w-full px-3 py-2 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors resize-none"
+                    className="w-full px-3 py-2 bg-[#f0f3f7] rounded-lg focus:outline-none transition-colors resize-none"
                   />
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex justify-end space-x-4 mt-8">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                  >
-                    Save Changes
-                  </button>
-                </div>
-              </div>
+            </div>
             </form>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-4 mt-6">
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors"
+              >
+                Save Changes
+              </button>
+            </div>
         </div>
       </div>
 
