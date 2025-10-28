@@ -18,6 +18,7 @@ import Products from '../pages/Products'
 import Login from '../pages/Login'
 import OTP from '../pages/OTP'
 import Success from '../pages/Success'
+import Profile from '../pages/Profile'
 import { Routes, Route } from 'react-router-dom'
 function Routers() {
   return (
@@ -42,6 +43,7 @@ function Routers() {
             <Route path='/otp' element={<OTP />} />
             <Route path='/success' element={<Success />} />
             <Route path='/products' element={<Products />} />
+            <Route path='/profile' element={<Profile />} />
         </Routes>
     </div>
   )

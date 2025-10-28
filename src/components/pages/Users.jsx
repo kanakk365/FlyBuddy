@@ -202,7 +202,6 @@ function Users() {
             isOpen={showFilters}
             onClose={() => setShowFilters(false)}
             onApplyFilters={handleApplyFilters}
-            currentFilters={appliedFilters}
           />
         </div>
     </MainLayout>

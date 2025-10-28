@@ -1,6 +1,15 @@
-import React, { useState } from 'react'
+"use client"
 
-function FilterModal({ isOpen, onClose, onApplyFilters, currentFilters, type = 'users' }) {
+import React, { useState } from 'react'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+} from './ui/dialog'
+
+function FilterModal({ isOpen, onClose, onApplyFilters, type = 'users' }) {
   const [activeCategory, setActiveCategory] = useState(
     type === 'bookings' ? 'status' : 
     type === 'notifications' ? 'status' :
@@ -225,33 +234,33 @@ function FilterModal({ isOpen, onClose, onApplyFilters, currentFilters, type = '
     onClose()
   }
 
-  if (!isOpen) return null
-
   return (
-    <div className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl p-6 w-96 max-w-md mx-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent showCloseButton={true} className="max-w-md">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Filter By</h3>
-          <button
-            onClick={handleClearAll}
-            className="text-sm text-gray-500 hover:text-gray-700"
-          >
-            Clear All
-          </button>
-        </div>
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle>Filter By</DialogTitle>
+            <button
+              onClick={handleClearAll}
+              className="text-sm mt-5 text-gray-500 hover:text-gray-700"
+            >
+              Clear All
+            </button>
+          </div>
+        </DialogHeader>
 
-        <div className="flex">
+        <div className="flex gap-4">
           {/* Categories */}
-          <div className="w-1/2 pr-4">
+          <div className="w-1/2">
             <div className="space-y-2">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                  className={`w-full text-left px-4 py-3 transition-colors ${
                     activeCategory === category.id
-                      ? 'bg-blue-100 text-blue-700'
+                      ? ' text-black bg-[#acbed7]'
                       : 'bg-white text-gray-700 hover:bg-gray-50'
                   }`}
                 >
@@ -262,7 +271,7 @@ function FilterModal({ isOpen, onClose, onApplyFilters, currentFilters, type = '
           </div>
 
           {/* Options */}
-          <div className="w-1/2 pl-4">
+          <div className="w-1/2">
             <div className="space-y-3">
               {options[activeCategory]?.map((option) => (
                 <label key={option.id} className="flex items-center">
@@ -280,7 +289,7 @@ function FilterModal({ isOpen, onClose, onApplyFilters, currentFilters, type = '
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+        <DialogFooter>
           <button
             onClick={onClose}
             className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
@@ -289,13 +298,13 @@ function FilterModal({ isOpen, onClose, onApplyFilters, currentFilters, type = '
           </button>
           <button
             onClick={handleApply}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-black bg-[#acbed7] rounded-lg transition-colors"
           >
             Apply
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 

@@ -9,17 +9,17 @@ function Success() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{
+    <div className="min-h-screen flex items-center justify-center p-4" style={{
       background: 'linear-gradient(to bottom, #ABBCD6, #B5D8E7, #ABBCD6)'
     }}>
-      <div className="bg-white rounded-3xl shadow-2xl p-12 w-full max-w-xl text-center">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
         {/* Success Icon */}
-        <div className="flex justify-center mb-8">
-          <div className="w-28 h-28 rounded-full flex items-center justify-center shadow-xl" style={{
+        <div className="flex justify-center mb-6">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center shadow-lg" style={{
             background: '#ABBCD6'
           }}>
             <svg
-              className="w-14 h-14 text-white"
+              className="w-10 h-10 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -36,22 +36,19 @@ function Success() {
         </div>
 
         {/* Success Message */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-gray-800 mb-3">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">
             OTP verified Successfully!!
           </h1>
-          <p className="text-gray-500 text-base">
-            Go to Dashboard
-          </p>
         </div>
 
         {/* Go to Dashboard Button */}
         <button
           onClick={handleGoToDashboard}
-          className="w-full text-white font-semibold text-lg py-5 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg"
+          className="w-full text-white font-semibold text-sm py-3 px-4 rounded-lg transition-all duration-200 transform focus:outline-none cursor-pointer"
           style={{
             background: '#D597C1',
-            boxShadow: '0 4px 15px rgba(213, 151, 193, 0.4)'
+            boxShadow: '0 2px 8px rgba(213, 151, 193, 0.4)'
           }}
           onMouseEnter={(e) => {
             e.target.style.background = '#C485B0'

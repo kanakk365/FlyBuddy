@@ -17,26 +17,26 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6" style={{
+    <div className="min-h-screen flex items-center justify-center p-4" style={{
       background: 'linear-gradient(to bottom, #ABBCD6, #B5D8E7, #ABBCD6)'
     }}>
-      <div className="bg-white rounded-3xl shadow-2xl p-12 w-full max-w-xl">
+      <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         {/* Logo and Brand */}
-        <div className="text-center mb-10">
-          <div className="flex justify-center mb-6">
-            <img src={logo} alt="Flybuddy" className="h-20 w-auto" />
+        <div className="text-center mb-6">
+          <div className="flex justify-center mb-4">
+            <img src={logo} alt="Flybuddy" className="h-12 w-auto" />
           </div>
-          <h1 className="text-4xl text-gray-800 mb-3">Welcome Back</h1>
-          <p className="text-gray-500 text-lg">
+          <h1 className="text-2xl text-gray-800 mb-2">Welcome Back</h1>
+          <p className="text-gray-500 text-sm">
             Enter your email and password to access your account
           </p>
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-7">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-3">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
               Email Id
             </label>
             <input
@@ -44,14 +44,14 @@ function Login() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-5 py-4 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none transition-all duration-200"
               placeholder="Enter your email"
             />
           </div>
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-3">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
               Password
             </label>
             <div className="relative">
@@ -60,16 +60,16 @@ function Login() {
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-5 py-4 pr-14 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200"
+                className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none transition-all duration-200"
                 placeholder="Enter your password"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
               >
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -106,10 +106,10 @@ function Login() {
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full text-white font-semibold text-lg py-5 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg mt-8"
+            className="w-full text-white font-semibold text-sm py-3 px-4 rounded-lg transition-all duration-200 transform focus:outline-none  mt-6 cursor-pointer "
             style={{
               background: '#D597C1',
-              boxShadow: '0 4px 15px rgba(213, 151, 193, 0.4)'
+              boxShadow: '0 2px 8px rgba(213, 151, 193, 0.4)'
             }}
             onMouseEnter={(e) => {
               e.target.style.background = '#C485B0'
