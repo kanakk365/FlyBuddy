@@ -1,12 +1,55 @@
 import React from 'react'
+import { ChartAreaLinear } from '../ui/area-chart'
+import {
+  Users,
+  UserPlus,
+  TrendingUp,
+  MapPin,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react"
 
 function UserReports() {
   const metrics = [
-    { label: 'Total Active Users', value: '1,250', badge: '+24.8%', badgeColor: 'green' },
-    { label: 'New Users This Month', value: '320', badge: '+12%', badgeColor: 'pink' },
-    { label: 'Premium Conversion Rate', value: '18%', badge: '+0.8%', badgeColor: 'green' },
-    { label: 'Average Trips per User', value: '2.4', badge: '+12.8%', badgeColor: 'green' }
+    {
+      title: "Total Active Users",
+      value: "1,250",
+      change: "24.8%",
+      changeType: "increase",
+      icon: "users",
+    },
+    {
+      title: "New Users This Month",
+      value: "320",
+      change: "12%",
+      changeType: "increase",
+      icon: "userPlus",
+    },
+    {
+      title: "Premium Conversion Rate",
+      value: "18%",
+      change: "0.8%",
+      changeType: "increase",
+      icon: "trendingUp",
+    },
+    {
+      title: "Average Trips per User",
+      value: "2.4",
+      change: "12.8%",
+      changeType: "increase",
+      icon: "mapPin",
+    },
   ]
+
+  const getIcon = (iconName) => {
+    const icons = {
+      users: <Users className="w-4 h-4 text-neutral-400" />,
+      userPlus: <UserPlus className="w-4 h-4 text-neutral-400" />,
+      trendingUp: <TrendingUp className="w-4 h-4 text-neutral-400" />,
+      mapPin: <MapPin className="w-4 h-4 text-neutral-400" />,
+    };
+    return icons[iconName] || null;
+  };
 
   const topActiveUsers = [
     { name: 'Rohan Mehra', email: 'rohan24@...', joinedOn: 'Oct 6', plan: 'Free' },
@@ -18,124 +61,147 @@ function UserReports() {
       {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {metrics.map((metric, index) => (
-          <div key={index} className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-6">
-            <p className="text-sm text-gray-600 mb-2">{metric.label}</p>
+          <div
+            key={index}
+            className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7]"
+          >
+            <div className="flex items-center mb-4">
+              <div className="mr-3">{getIcon(metric.icon)}</div>
+              <h3 className="text-xs text-neutral-400">{metric.title}</h3>
+            </div>
             <div className="flex items-center">
-              <p className="text-3xl font-bold text-gray-900">{metric.value}</p>
-              <span className={`ml-2 px-2 py-1 text-xs font-medium rounded ${
-                metric.badgeColor === 'green' ? 'bg-green-100 text-green-600' : 'bg-pink-100 text-pink-600'
-              }`}>
-                {metric.badge}
-              </span>
+              <p className="text-2xl font-medium text-gray-900 mr-3">
+                {metric.value}
+              </p>
+              <div
+                className={`px-2 py-1 rounded text-xs ${
+                  metric.changeType === "increase"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+                style={{
+                  backgroundColor:
+                    metric.changeType === "increase"
+                      ? "#05C16833"
+                      : "#FEE2E2",
+                }}
+              >
+                <span className="flex items-center">
+                  {metric.change}
+                  {metric.changeType === "increase" ? (
+                    <ArrowUpRight className="w-4 h-4 mr-1" />
+                  ) : (
+                    <ArrowDownRight className="w-4 h-4 mr-1" />
+                  )}
+                </span>
+              </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* User Growth Engagement Chart */}
-        <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">User Growth Engagement</h3>
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900">257</span>
-              <span className="ml-2 px-2 py-1 text-xs font-medium rounded bg-green-100 text-green-600">
-                +12.6%
-              </span>
-            </div>
-          </div>
-          
-          {/* Simple line chart representation */}
-          <div className="h-64 flex items-end justify-between space-x-2">
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '40%'}}></div>
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '60%'}}></div>
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '50%'}}></div>
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '80%'}}></div>
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '70%'}}></div>
-            <div className="flex-1 bg-gradient-to-t from-pink-100 to-transparent rounded-t" style={{height: '65%'}}></div>
-          </div>
-          <div className="flex justify-between text-xs text-gray-500 mt-2">
-            <span>Jan 2</span>
-            <span>Jan 9</span>
-            <span>Jan 16</span>
-            <span>Jan 23</span>
-            <span>Jan 31</span>
-            <span>Feb 1</span>
-          </div>
-        </div>
+      {/* Charts and Pie Chart Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-[69%_29%] gap-6 mb-8">
+        {/* Area Chart */}
+        <ChartAreaLinear />
 
-        {/* Free vs Premium Distribution Chart */}
-        <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Free vs Premium Distribution</h3>
-          
-          {/* Donut chart representation */}
-          <div className="flex items-center justify-center h-64">
+        {/* User Distribution Pie Chart */}
+        <div className="bg-white p-6 pr-2 rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7]">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            User Distribution
+          </h3>
+          <div className="h-80 w-full flex items-center justify-center">
             <div className="relative w-48 h-48">
               <svg viewBox="0 0 100 100" className="transform -rotate-90">
                 {/* Premium (pink) - 60% */}
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#ec4899" strokeWidth="20" strokeDasharray="150.8 251.2" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#d597c1" strokeWidth="20" strokeDasharray="150.8 251.2" />
                 {/* Free (blue) - 40% */}
-                <circle cx="50" cy="50" r="40" fill="none" stroke="#3b82f6" strokeWidth="20" strokeDasharray="100.5 251.2" strokeDashoffset="-150.8" />
+                <circle cx="50" cy="50" r="40" fill="none" stroke="#abbcd6" strokeWidth="20" strokeDasharray="100.5 251.2" strokeDashoffset="-150.8" />
               </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">1,250</div>
+                  <div className="text-xs text-gray-500">Total Users</div>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Legend */}
-          <div className="flex justify-center space-x-6 mt-4">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-blue-500 rounded-full mr-2"></div>
-              <span className="text-sm text-gray-600">Free</span>
+          <div className="space-y-3 pr-4">
+            <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full mr-3" style={{backgroundColor: '#abbcd6'}}></div>
+                <span className="font-medium text-gray-900">Free Users</span>
+              </div>
+              <span className="text-sm text-gray-500">500 (40%)</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-pink-500 rounded-full mr-2"></div>
-              <span className="text-sm text-gray-600">Premium</span>
+            <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0">
+              <div className="flex items-center">
+                <div className="w-3 h-3 rounded-full mr-3" style={{backgroundColor: '#d597c1'}}></div>
+                <span className="font-medium text-gray-900">Premium Users</span>
+              </div>
+              <span className="text-sm text-gray-500">750 (60%)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Top Active Users Table */}
-      <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Top Active Users</h3>
-          <button className="text-sm text-blue-600 hover:text-blue-700 font-medium">
-            View all
-          </button>
+      {/* New Users Table */}
+      <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7]">
+        <div className="p-6">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Top Active Users
+            </h3>
+            <button
+              className=" py-1.5 text-black px-6 rounded-full text-sm bg-[#B8C8E0]"
+
+            >
+              View all
+            </button>
+          </div>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className="overflow-x-auto px-6">
+          <table className="w-full">
+            <thead className="bg-neutral-100 py-4 rounded-xl">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   Joined On
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   Plan
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {topActiveUsers.map((user, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    {user.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {user.joinedOn}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.joinedOn}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{user.plan}</div>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        user.plan === "Premium"
+                          ? "bg-purple-100 text-purple-800"
+                          : "bg-gray-100 text-gray-800"
+                      }`}
+                    >
+                      {user.plan}
+                    </span>
                   </td>
                 </tr>
               ))}

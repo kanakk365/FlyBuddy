@@ -1,6 +1,16 @@
 import React from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import logo from '../../assets/Top.png'
+import {
+  LayoutGrid,
+  Users,
+  BookOpen,
+  Bell,
+  FileText,
+  Calendar,
+  BarChart3,
+  ChevronRight
+} from 'lucide-react'
 
 function Sidebar({ collapsed, onToggleCollapse }) {
   const navigate = useNavigate()
@@ -18,41 +28,13 @@ function Sidebar({ collapsed, onToggleCollapse }) {
 
   const getIcon = (iconName) => {
     const icons = {
-      grid: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M3 3h6v6H3V3zm8 0h6v6h-6V3zm-8 8h6v6H3v-6zm8 0h6v6h-6v-6z"/>
-        </svg>
-      ),
-      users: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M16 7c0-2.21-1.79-4-4-4S8 4.79 8 7s1.79 4 4 4 4-1.79 4-4zm-4 6c-3.31 0-6 2.69-6 6v2h12v-2c0-3.31-2.69-6-6-6z"/>
-        </svg>
-      ),
-      book: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-        </svg>
-      ),
-      bell: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-        </svg>
-      ),
-      document: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
-        </svg>
-      ),
-      calendar: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-        </svg>
-      ),
-      chart: (
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M5 9.2h3V19H5zM10.6 5h2.8v14h-2.8zm5.6 8H19v6h-2.8z"/>
-        </svg>
-      )
+      grid: <LayoutGrid className="w-5 h-5" />,
+      users: <Users className="w-5 h-5" />,
+      book: <BookOpen className="w-5 h-5" />,
+      bell: <Bell className="w-5 h-5" />,
+      document: <FileText className="w-5 h-5" />,
+      calendar: <Calendar className="w-5 h-5" />,
+      chart: <BarChart3 className="w-5 h-5" />
     }
     return icons[iconName] || null
   }
@@ -76,15 +58,13 @@ function Sidebar({ collapsed, onToggleCollapse }) {
           <div className="flex items-start z-10 -mr-6">
             <button
               onClick={onToggleCollapse}
-              className="w-8 h-8 rounded-full hover:bg-gray-100 transition-colors bg-white border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0"
+              className="w-8 h-8 rounded-full hover:bg-gray-100 transition-colors bg-white border border-gray-200 shadow-sm flex items-center justify-center flex-shrink-0 cursor-pointer"
             >
-              <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {collapsed ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                )}
-              </svg>
+              {collapsed ? (
+                <ChevronRight className="w-4 h-4 text-gray-700" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-gray-700 rotate-180" />
+              )}
             </button>
           </div>
         </div>
@@ -98,7 +78,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
               <li key={index}>
                 <button
                   onClick={() => navigate(item.path)}
-                  className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors ${
+                  className={`w-full flex items-center px-4 py-3 rounded-lg transition-colors cursor-pointer ${
                     isActive
                       ? 'bg-gray-100 text-gray-800'
                       : 'text-gray-500 hover:bg-gray-50'
@@ -128,9 +108,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
                   </div>
                   <div className="text-[15px] font-semibold text-gray-900 truncate">Ria</div>
                 </div>
-                <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" />
               </>
             )}
           </div>
