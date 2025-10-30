@@ -6,7 +6,7 @@ import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YA
 
 export const description = "A linear area chart"
 
-const chartData = [
+const defaultChartData = [
   { day: "Jan 1", value: 0 },
   { day: "Jan 4", value: 90 },
   { day: "Jan 8", value: 60 },
@@ -19,7 +19,17 @@ const chartData = [
   { day: "Feb 1", value: 440 },
 ]
 
-export function ChartAreaLinear() {
+export function ChartAreaLinear({ data, yLabel = "Users" }) {
+  const chartData = Array.isArray(data) && data.length > 0 ? data : defaultChartData
+
+  // Derive dynamic Y-axis ticks from data
+  const values = Array.isArray(chartData) ? chartData.map((d) => Number(d?.value) || 0) : []
+  const maxValue = values.length ? Math.max(...values) : 0
+  const desiredTickCount = 5
+  const stepBase = 50
+  const step = Math.max(stepBase, Math.ceil((maxValue || stepBase) / desiredTickCount / stepBase) * stepBase)
+  const maxTick = Math.max(stepBase * desiredTickCount, Math.ceil((maxValue || stepBase) / step) * step)
+  const ticks = Array.from({ length: Math.floor(maxTick / step) + 1 }, (_, i) => i * step)
   return (
     <div className="bg-white rounded-xl shadow-[0_4px_20px_rgba(15,23,42,0.06)] border border-[#e5e7eb] p-8 w-full">
       <div className="flex items-start justify-between gap-6">
@@ -70,9 +80,10 @@ export function ChartAreaLinear() {
             <YAxis
               tickLine={false}
               axisLine={false}
-              ticks={[0, 150, 250, 400]}
+              ticks={ticks}
               fontSize={10}
               stroke="#a1a1aa"
+              label={{ value: yLabel, angle: -90, position: "insideLeft", offset: 10, style: { fill: "#6b7280", fontSize: 11 } }}
             />
             <Area
               type="linear"
