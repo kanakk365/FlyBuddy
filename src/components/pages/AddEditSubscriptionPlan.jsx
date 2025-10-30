@@ -1,14 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 
 function AddEditSubscriptionPlan() {
   const navigate = useNavigate();
   const { id } = useParams();
-  const location = useLocation();
   const mode = useMemo(() => (id ? "edit" : "create"), [id]);
 
-  // Initial values (in real app, fetch when editing)
   const [planName, setPlanName] = useState(id ? "Premium" : "");
   const [status, setStatus] = useState(id ? "Active" : "Active");
   const [amount, setAmount] = useState(id ? "$25" : "");
@@ -21,7 +19,6 @@ function AddEditSubscriptionPlan() {
   const handleCancel = () => navigate(-1);
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Persist form here
     navigate("/subscriptions");
   };
 
@@ -29,7 +26,6 @@ function AddEditSubscriptionPlan() {
     <MainLayout>
       <div className="p-6 page-zoom-plus-10">
         <div className="max-w-5xl mx-auto">
-          {/* Page Header with Back */}
           <div className="mb-6">
             <div className="flex items-center mb-6">
               <button
@@ -56,7 +52,6 @@ function AddEditSubscriptionPlan() {
             <hr className="border-gray-200 mb-6" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Plan Name */}
               <div>
                 <label className="block text-sm font-medium text-black mb-4">Plan Name</label>
                 <input
@@ -69,7 +64,6 @@ function AddEditSubscriptionPlan() {
                 />
               </div>
 
-              {/* Status */}
               <div>
                 <label className="block text-sm font-medium text-black mb-4">Status</label>
                 <select
@@ -82,7 +76,6 @@ function AddEditSubscriptionPlan() {
                 </select>
               </div>
 
-              {/* Amount */}
               <div>
                 <label className="block text-sm font-medium text-black mb-4">Amount</label>
                 <input
@@ -95,10 +88,8 @@ function AddEditSubscriptionPlan() {
                 />
               </div>
 
-              {/* Spacer */}
               <div />
 
-              {/* Message (content) */}
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-black mb-4">Message (content)</label>
                 <textarea
@@ -111,7 +102,6 @@ function AddEditSubscriptionPlan() {
               </div>
             </div>
 
-            {/* Action Buttons */}
             <div className="flex justify-end space-x-4 mt-6">
               <button
                 type="button"
