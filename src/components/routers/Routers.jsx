@@ -14,6 +14,8 @@ import EditRole from '../pages/EditRole'
 import Subscriptions from '../pages/Subscriptions'
 import SubscriptionDetails from '../pages/SubscriptionDetails'
 import Reports from '../pages/Reports'
+import SubscriptionPlanDetails from '../pages/SubscriptionPlanDetails'
+import AddEditSubscriptionPlan from '../pages/AddEditSubscriptionPlan'
 import Products from '../pages/Products'
 import Login from '../pages/Login'
 import OTP from '../pages/OTP'
@@ -39,6 +41,9 @@ function Routers() {
             <Route path='/edit-role' element={<EditRole />} />
             <Route path='/subscriptions' element={<Subscriptions />} />
             <Route path='/subscription-details' element={<SubscriptionDetails />} />
+            <Route path='/subscription-plan/:id' element={<SubscriptionPlanDetails />} />
+            <Route path='/subscription-plan/new' element={<AddEditSubscriptionPlan />} />
+            <Route path='/subscription-plan/:id/edit' element={<AddEditSubscriptionPlan />} />
             <Route path='/reports' element={<Reports />} />
             <Route path='/otp' element={<OTP />} />
             <Route path='/success' element={<Success />} />
