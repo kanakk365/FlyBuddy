@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Calendar, ChevronDown } from "lucide-react"
+import React from "react";
+import { Calendar, ChevronDown } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -9,8 +9,8 @@ import {
   ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
-} from "recharts"
+  YAxis,
+} from "recharts";
 
 const bookingsData = [
   { month: "Jan", pending: 19000, verified: 10000 },
@@ -24,39 +24,48 @@ const bookingsData = [
   { month: "Sep", pending: 24000, verified: 15000 },
   { month: "Oct", pending: 10000, verified: 5000 },
   { month: "Nov", pending: 35000, verified: 12000 },
-  { month: "Dec", pending: 27000, verified: 19000 }
-]
+  { month: "Dec", pending: 27000, verified: 19000 },
+];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload || payload.length === 0) {
-    return null
+    return null;
   }
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-md">
       <p className="text-sm font-semibold text-slate-900">{label}</p>
-        <div className="mt-1 space-y-1 text-xs text-slate-600">
-          <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full" style={{backgroundColor: '#abbcd6'}} />
-            Pending: {payload[0]?.value?.toLocaleString()}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="inline-block h-2 w-2 rounded-full" style={{backgroundColor: '#d597c1'}} />
-            Verified: {payload[1]?.value?.toLocaleString()}
-          </div>
+      <div className="mt-1 space-y-1 text-xs text-slate-600">
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ backgroundColor: "#abbcd6" }}
+          />
+          Pending: {payload[0]?.value?.toLocaleString()}
         </div>
+        <div className="flex items-center gap-2">
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ backgroundColor: "#d597c1" }}
+          />
+          Verified: {payload[1]?.value?.toLocaleString()}
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-const tickFormatter = (value) => `${Math.round(value / 1000)}K`
+const tickFormatter = (value) => `${Math.round(value / 1000)}K`;
 
-export function ChartBookingsBar() {
+export function ChartBookingsBar({ data }) {
+  const chartData = data || bookingsData;
   return (
     <div className="bg-white rounded-xl shadow-[0_4px_20px_rgba(15,23,42,0.06)] border border-[#e5e7eb] p-8 w-full">
       <div className="flex items-start justify-between gap-6">
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-slate-900">Tickets Pending vs Verified</h3>
+          <h3 className="text-xl font-semibold text-slate-900">
+            Tickets Pending vs Verified
+          </h3>
         </div>
 
         <button className="flex items-center gap-2 rounded-xl border border-[#e5e7eb] bg-white px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
@@ -67,22 +76,28 @@ export function ChartBookingsBar() {
       </div>
 
       <div className="flex justify-center mt-4">
-          <div className="flex items-center gap-6 text-sm">
-            <div className="flex items-center gap-2 text-slate-500">
-              <span className="h-2 w-2 rounded-full" style={{backgroundColor: '#abbcd6'}} />
-              Pending
-            </div>
-            <div className="flex items-center gap-2 text-slate-500">
-              <span className="h-2 w-2 rounded-full" style={{backgroundColor: '#d597c1'}} />
-              Verified
-            </div>
+        <div className="flex items-center gap-6 text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: "#abbcd6" }}
+            />
+            Pending
           </div>
+          <div className="flex items-center gap-2 text-slate-500">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: "#d597c1" }}
+            />
+            Verified
+          </div>
+        </div>
       </div>
 
       <div className="mt-8 h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={bookingsData}
+            data={chartData}
             barGap={0}
             barCategoryGap="20%"
             margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
@@ -106,15 +121,27 @@ export function ChartBookingsBar() {
               domain={[0, 100000]}
               tickFormatter={tickFormatter}
             />
-            <Tooltip cursor={{ fill: "rgba(148, 163, 184, 0.1)" }} content={<CustomTooltip />} />
-            <Bar dataKey="pending" fill="#abbcd6" radius={[6, 6, 0, 0]} maxBarSize={15} />
-            <Bar dataKey="verified" fill="#d597c1" radius={[6, 6, 0, 0]} maxBarSize={15} />
+            <Tooltip
+              cursor={{ fill: "rgba(148, 163, 184, 0.1)" }}
+              content={<CustomTooltip />}
+            />
+            <Bar
+              dataKey="pending"
+              fill="#abbcd6"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={15}
+            />
+            <Bar
+              dataKey="verified"
+              fill="#d597c1"
+              radius={[6, 6, 0, 0]}
+              maxBarSize={15}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
     </div>
-  )
+  );
 }
 
-export default ChartBookingsBar
-
+export default ChartBookingsBar;

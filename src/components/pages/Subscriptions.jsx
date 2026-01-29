@@ -147,9 +147,7 @@ function Subscriptions() {
           item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (item.lastUpdated &&
-            item.lastUpdated
-              .toLowerCase()
-              .includes(searchTerm.toLowerCase()))
+            item.lastUpdated.toLowerCase().includes(searchTerm.toLowerCase()))
         );
       });
     }
@@ -170,11 +168,11 @@ function Subscriptions() {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
     if (date.toString() === "Invalid Date") return dateString;
-    const options = { 
-        year: "numeric", 
-        month: "short", 
-        day: "numeric",
-        ...(includeTime && { hour: '2-digit', minute: '2-digit' })
+    const options = {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      ...(includeTime && { hour: "2-digit", minute: "2-digit" }),
     };
     return date.toLocaleDateString("en-US", options);
   };
@@ -422,7 +420,7 @@ function Subscriptions() {
                 {/* Filters Button */}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className="flex items-center px-4 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="flex items-center px-4 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -524,7 +522,7 @@ function Subscriptions() {
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="p-2 rounded-l-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
+                  className="p-2 rounded-l-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6] cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4"
@@ -545,7 +543,7 @@ function Subscriptions() {
                     setCurrentPage(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
-                  className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
+                  className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6] cursor-pointer"
                 >
                   <svg
                     className="w-4 h-4"

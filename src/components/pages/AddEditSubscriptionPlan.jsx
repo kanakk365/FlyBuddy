@@ -105,7 +105,7 @@ function AddEditSubscriptionPlan() {
             <div className="flex items-center mb-6">
               <button
                 onClick={() => navigate("/subscriptions")}
-                className="mr-6 p-3 rounded-xl hover:bg-gray-100 transition-colors"
+                className="mr-6 p-3 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <svg
                   className="w-6 h-6"
@@ -201,14 +201,14 @@ function AddEditSubscriptionPlan() {
               <button
                 type="button"
                 onClick={handleCancel}
-                className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
+                className="px-6 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors cursor-pointer"
                 disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors flex items-center"
+                className="px-6 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors flex items-center cursor-pointer"
                 disabled={isLoading}
               >
                 {isLoading && (

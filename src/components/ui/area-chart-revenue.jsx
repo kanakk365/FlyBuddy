@@ -1,9 +1,17 @@
-"use client"
+"use client";
 
-import React from "react"
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import React from "react";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
-export const description = "A revenue area chart"
+export const description = "A revenue area chart";
 
 const revenueData = [
   { month: "Jan", revenue: 180000 },
@@ -18,14 +26,15 @@ const revenueData = [
   { month: "Oct", revenue: 290000 },
   { month: "Nov", revenue: 305000 },
   { month: "Dec", revenue: 320000 },
-]
+];
 
-export function ChartAreaRevenue() {
+export function ChartAreaRevenue({ data }) {
+  const chartData = data || revenueData;
   return (
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={revenueData}
+          data={chartData}
           margin={{
             top: 10,
             right: 30,
@@ -39,7 +48,11 @@ export function ChartAreaRevenue() {
               <stop offset="95%" stopColor="#f472b6" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f4f4f5" vertical={false} />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke="#f4f4f5"
+            vertical={false}
+          />
           <XAxis
             dataKey="month"
             tickLine={false}
@@ -51,7 +64,6 @@ export function ChartAreaRevenue() {
           <YAxis
             tickLine={false}
             axisLine={false}
-            ticks={[150000, 200000, 250000, 300000, 350000]}
             fontSize={10}
             stroke="#a1a1aa"
             tickFormatter={(value) => `$${(value / 1000).toFixed(0)}K`}
@@ -60,15 +72,17 @@ export function ChartAreaRevenue() {
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
                 return (
-                  <div style={{
-                    backgroundColor: '#f472b6',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: 'white',
-                    fontSize: '12px',
-                    padding: '8px 12px'
-                  }}>
-                    <p style={{ margin: 0, fontWeight: 'bold' }}>
+                  <div
+                    style={{
+                      backgroundColor: "#f472b6",
+                      border: "none",
+                      borderRadius: "8px",
+                      color: "white",
+                      fontSize: "12px",
+                      padding: "8px 12px",
+                    }}
+                  >
+                    <p style={{ margin: 0, fontWeight: "bold" }}>
                       {`${label} Revenue`}
                     </p>
                     <p style={{ margin: 0 }}>
@@ -90,5 +104,5 @@ export function ChartAreaRevenue() {
         </AreaChart>
       </ResponsiveContainer>
     </div>
-  )
+  );
 }

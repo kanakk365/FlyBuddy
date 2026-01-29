@@ -69,7 +69,7 @@ function SubscriptionPlanDetails() {
           <div className="text-center mt-4">
             <button
               onClick={() => navigate("/subscriptions")}
-              className="text-blue-500 hover:underline"
+              className="text-blue-500 hover:underline cursor-pointer"
             >
               Go back to Subscriptions
             </button>
@@ -88,7 +88,7 @@ function SubscriptionPlanDetails() {
             <div className="flex items-center mb-6">
               <button
                 onClick={() => navigate("/subscriptions")}
-                className="mr-6 p-3 rounded-xl hover:bg-gray-100 transition-colors"
+                className="mr-6 p-3 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer"
               >
                 <svg
                   className="w-6 h-6"
