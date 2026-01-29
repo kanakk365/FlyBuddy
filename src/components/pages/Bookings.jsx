@@ -1,12 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 import FilterModal from "../FilterModal";
+import { getBookings } from "../../api/bookings";
 
 function Bookings() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [bookings, setBookings] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
   const [showFilters, setShowFilters] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState({
     status: {
@@ -20,103 +31,29 @@ function Bookings() {
     },
   });
 
-  const bookingsData = [
-    {
-      id: 1,
-      ticketId: "#TCK001",
-      user: "Rohan Mehta",
-      route: "HYD → DXB",
-      airline: "Indigo",
-      status: "Verified",
-    },
-    {
-      id: 2,
-      ticketId: "#TCK002",
-      user: "Priya Agarwal",
-      route: "BOM → DXB",
-      airline: "Emirates",
-      status: "Pending",
-    },
-    {
-      id: 3,
-      ticketId: "#TCK003",
-      user: "Sia Sen",
-      route: "BLR → BKK",
-      airline: "AirAsia",
-      status: "Verified",
-    },
-    {
-      id: 4,
-      ticketId: "#TCK004",
-      user: "Lily singh",
-      route: "HYD → DXB",
-      airline: "Emirates",
-      status: "Pending",
-    },
-    {
-      id: 5,
-      ticketId: "#TCK005",
-      user: "Nia Sharma",
-      route: "BOM → DXB",
-      airline: "Emirates",
-      status: "Verified",
-    },
-    {
-      id: 6,
-      ticketId: "#TCK006",
-      user: "Sam Das",
-      route: "BLR → BKK",
-      airline: "Emirates",
-      status: "Rejected",
-    },
-    {
-      id: 7,
-      ticketId: "#TCK007",
-      user: "Mehak S",
-      route: "BLR → BKK",
-      airline: "Emirates",
-      status: "Verified",
-    },
-    {
-      id: 8,
-      ticketId: "#TCK008",
-      user: "Disha shah",
-      route: "HYD → DXB",
-      airline: "Emirates",
-      status: "Pending",
-    },
-  ];
+  // Fetch bookings when currentPage changes
+  useEffect(() => {
+    fetchBookings(currentPage);
+  }, [currentPage]);
 
-  const filteredBookings = bookingsData.filter((booking) => {
-    // Search filter
-    const matchesSearch =
-      booking.ticketId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.route.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      booking.airline.toLowerCase().includes(searchTerm.toLowerCase());
-
-    // Status filter
-    const statusFilter =
-      appliedFilters.status.verified ||
-      appliedFilters.status.pending ||
-      appliedFilters.status.rejected;
-    const matchesStatus =
-      !statusFilter ||
-      (appliedFilters.status.verified && booking.status === "Verified") ||
-      (appliedFilters.status.pending && booking.status === "Pending") ||
-      (appliedFilters.status.rejected && booking.status === "Rejected");
-
-    return matchesSearch && matchesStatus;
-  });
-
-  const totalPages = Math.ceil(filteredBookings.length / 10);
-  const startIndex = (currentPage - 1) * 10;
-  const endIndex = startIndex + 10;
-  const currentBookings = filteredBookings.slice(startIndex, endIndex);
+  const fetchBookings = async (page) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getBookings(page, 10);
+      setBookings(data.bookings);
+      setPagination(data.pagination);
+    } catch (err) {
+      console.error("Failed to fetch bookings", err);
+      setError("Failed to load bookings. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleViewBooking = (bookingId) => {
     console.log("Viewing booking:", bookingId);
-    navigate("/booking-details");
+    navigate("/booking-details", { state: { bookingId } });
   };
 
   const handleApplyFilters = (filters) => {
@@ -142,9 +79,7 @@ function Bookings() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h1 className="text-2xl  text-gray-900">
-                  All Bookings
-                </h1>
+                <h1 className="text-2xl  text-gray-900">All Bookings</h1>
                 <p className="text-gray-600 mt-1">
                   Manage all uploaded tickets and their verification status.
                 </p>
@@ -207,65 +142,108 @@ function Bookings() {
 
           {/* Bookings Table */}
           <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden p-4">
-            <div className="overflow-x-auto">
-              <table className="w-full border-separate border-spacing-0">
-                <thead className="bg-gray-100">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">
-                      Ticket ID
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                      Route
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                      Airline
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentBookings.map((booking, index) => (
-                    <tr
-                      key={booking.id}
-                      className={`hover:bg-gray-50 ${
-                        index === 0 ? "pt-4" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {booking.ticketId}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {booking.user}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {booking.route}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {booking.airline}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() => handleViewBooking(booking.id)}
-                          className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer"
-                        >
-                          View
-                        </button>
-                      </td>
+            {isLoading ? (
+              <div className="flex justify-center items-center py-20">
+                <svg
+                  className="animate-spin h-8 w-8 text-gray-400"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </div>
+            ) : error ? (
+              <div className="text-center py-10 text-red-500">{error}</div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-separate border-spacing-0">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">
+                        Ticket ID
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        User
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        Route
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
+                        Airline
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
+                        Action
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {bookings.map((booking, index) => (
+                      <tr
+                        key={booking.id}
+                        className={`hover:bg-gray-50 ${
+                          index === 0 ? "pt-4" : ""
+                        }`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {booking.ticketId}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {booking.user}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {booking.route}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {booking.airline}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <button
+                            onClick={() => handleViewBooking(booking.id)}
+                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {bookings.length === 0 && (
+                      <tr>
+                        <td
+                          colSpan="5"
+                          className="text-center py-8 text-gray-500"
+                        >
+                          No bookings found
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* Pagination */}
             <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                Showing {startIndex + 1} of {filteredBookings.length}
+                Showing{" "}
+                {bookings.length > 0
+                  ? (pagination.page - 1) * pagination.limit + 1
+                  : 0}{" "}
+                to{" "}
+                {Math.min(pagination.page * pagination.limit, pagination.total)}{" "}
+                of {pagination.total}
               </div>
               <div className="flex items-center  divide-x divide-neutral-500">
                 <button
@@ -289,9 +267,11 @@ function Bookings() {
                 </button>
                 <button
                   onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    setCurrentPage(
+                      Math.min(pagination.totalPages, currentPage + 1),
+                    )
                   }
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === pagination.totalPages}
                   className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
                 >
                   <svg
