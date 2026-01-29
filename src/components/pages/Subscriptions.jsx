@@ -7,6 +7,7 @@ import {
   getSubscriptions,
   getSubscriptionStats,
 } from "../../api/subscriptions";
+import { getPlans, getPlanStats, deletePlan } from "../../api/plans";
 
 function Subscriptions() {
   const navigate = useNavigate();
@@ -16,11 +17,18 @@ function Subscriptions() {
   const [showFilters, setShowFilters] = useState(false);
 
   const [subscriptions, setSubscriptions] = useState([]);
+  const [plans, setPlans] = useState([]);
   const [stats, setStats] = useState({
     activeSubscriptions: 0,
     expired: 0,
     autoRenewEnabled: 0,
     monthlyRecurringRevenue: 0,
+  });
+  const [planStats, setPlanStats] = useState({
+    totalPlans: 0,
+    activePlans: 0,
+    upcomingOffers: 0,
+    archivedPlans: 0,
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -49,11 +57,14 @@ function Subscriptions() {
 
   useEffect(() => {
     fetchStats();
+    fetchPlanStats();
   }, []);
 
   useEffect(() => {
     if (activeTab === "active-users") {
       fetchSubscriptions(currentPage);
+    } else if (activeTab === "plans") {
+      fetchPlans();
     }
   }, [activeTab, currentPage]);
 
@@ -63,6 +74,15 @@ function Subscriptions() {
       setStats(data);
     } catch (err) {
       console.error("Failed to fetch subscription stats", err);
+    }
+  };
+
+  const fetchPlanStats = async () => {
+    try {
+      const data = await getPlanStats();
+      setPlanStats(data);
+    } catch (err) {
+      console.error("Failed to fetch plan stats", err);
     }
   };
 
@@ -76,6 +96,20 @@ function Subscriptions() {
     } catch (err) {
       console.error("Failed to fetch subscriptions", err);
       setError("Failed to load subscriptions.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchPlans = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getPlans();
+      setPlans(data.plans || []);
+    } catch (err) {
+      console.error("Failed to fetch plans", err);
+      setError("Failed to load plans.");
     } finally {
       setIsLoading(false);
     }
@@ -95,86 +129,87 @@ function Subscriptions() {
       ];
     } else {
       return [
-        { label: "Total Plans", value: "3" },
-        { label: "Active Plans", value: "3" },
-        { label: "Upcoming Offers", value: "1" },
-        { label: "Archived Plans", value: "2" },
+        { label: "Total Plans", value: planStats.totalPlans },
+        { label: "Active Plans", value: planStats.activePlans },
+        { label: "Upcoming Offers", value: planStats.upcomingOffers },
+        { label: "Archived Plans", value: planStats.archivedPlans },
       ];
     }
   };
 
   // Plans data
-  const plansData = [
-    {
-      id: 1,
-      name: "Basic",
-      amount: "$10",
-      lastUpdated: "Oct 5, 2025",
-      status: "Active",
-    },
-    {
-      id: 2,
-      name: "Premium",
-      amount: "$25",
-      lastUpdated: "Oct 5, 2025",
-      status: "Active",
-    },
-    {
-      id: 3,
-      name: "Elite",
-      amount: "$45",
-      lastUpdated: "Oct 5, 2025",
-      status: "InActive",
-    },
-  ];
-
   const getFilteredData = () => {
     if (activeTab === "active-users") {
-        return subscriptions;
+      return subscriptions;
     } else {
-        return plansData.filter((item) => {
-            return (
-            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.lastUpdated.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.status.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-        });
+      return plans.filter((item) => {
+        return (
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (item.lastUpdated &&
+            item.lastUpdated
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase()))
+        );
+      });
     }
   };
 
   const currentData = getFilteredData();
-  const totalPages = activeTab === "active-users" ? pagination.totalPages : Math.ceil(currentData.length / 10);
-  // For plans (static), we still might need slicing if it grows, but for now let's assume it fits or slice it
-  const displayData = activeTab === "active-users" 
-    ? currentData 
-    : currentData.slice((currentPage - 1) * 10, (currentPage - 1) * 10 + 10);
+  const totalPages =
+    activeTab === "active-users"
+      ? pagination.totalPages
+      : Math.ceil(currentData.length / 10);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
+  const displayData =
+    activeTab === "active-users"
+      ? currentData
+      : currentData.slice((currentPage - 1) * 10, (currentPage - 1) * 10 + 10);
+
+  const formatDate = (dateString, includeTime = false) => {
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+    if (date.toString() === "Invalid Date") return dateString;
+    const options = { 
+        year: "numeric", 
+        month: "short", 
+        day: "numeric",
+        ...(includeTime && { hour: '2-digit', minute: '2-digit' })
+    };
+    return date.toLocaleDateString("en-US", options);
   };
 
   const renderTableContent = () => {
     if (activeTab === "active-users") {
-        if (isLoading) {
-            return (
-                <div className="flex justify-center items-center py-20">
-                    <svg className="animate-spin h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-            )
-        }
-        if (error) {
-            return <div className="text-center py-10 text-red-500">{error}</div>
-        }
+      if (isLoading) {
+        return (
+          <div className="flex justify-center items-center py-20">
+            <svg
+              className="animate-spin h-8 w-8 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          </div>
+        );
+      }
+      if (error) {
+        return <div className="text-center py-10 text-red-500">{error}</div>;
+      }
       return (
         <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-0">
@@ -229,11 +264,11 @@ function Subscriptions() {
                 </tr>
               ))}
               {displayData.length === 0 && (
-                  <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-500">
-                          No subscriptions found
-                      </td>
-                  </tr>
+                <tr>
+                  <td colSpan="6" className="text-center py-8 text-gray-500">
+                    No subscriptions found
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
@@ -254,9 +289,6 @@ function Subscriptions() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                   Last Updated
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                  Status
-                </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tr-xl">
                   Action
                 </th>
@@ -272,10 +304,7 @@ function Subscriptions() {
                     {plan.amount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                    {plan.lastUpdated}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                    {plan.status}
+                    {formatDate(plan.lastUpdated)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="flex items-center gap-2">
@@ -290,6 +319,12 @@ function Subscriptions() {
                         className="px-6 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer"
                       >
                         Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeletePlan(plan.id)}
+                        className="px-6 py-1.5 text-white rounded-full text-sm bg-red-500 hover:bg-red-600 cursor-pointer"
+                      >
+                        Delete
                       </button>
                     </div>
                   </td>
@@ -320,6 +355,19 @@ function Subscriptions() {
   const handleAddPlan = () => {
     console.log("Adding new plan");
     navigate("/subscription-plan/new");
+  };
+
+  const handleDeletePlan = async (planId) => {
+    if (window.confirm("Are you sure you want to delete this plan?")) {
+      try {
+        await deletePlan(planId);
+        fetchPlans(); // Refresh the list
+        fetchPlanStats(); // Refresh stats
+      } catch (err) {
+        console.error("Failed to delete plan", err);
+        setError("Failed to delete plan");
+      }
+    }
   };
 
   const handleApplyFilters = (filters) => {
@@ -454,17 +502,23 @@ function Subscriptions() {
             {/* Pagination */}
             <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                Showing {activeTab === "active-users" 
-                    ? (subscriptions.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0)
-                    : (displayData.length > 0 ? (currentPage - 1) * 10 + 1 : 0)
-                } 
-                {" "}to{" "} 
+                Showing{" "}
                 {activeTab === "active-users"
-                    ? Math.min(pagination.page * pagination.limit, pagination.total)
-                    : (currentPage - 1) * 10 + displayData.length
-                } 
-                {" "}of{" "} 
-                {activeTab === "active-users" ? pagination.total : plansData.length}
+                  ? subscriptions.length > 0
+                    ? (pagination.page - 1) * pagination.limit + 1
+                    : 0
+                  : displayData.length > 0
+                    ? (currentPage - 1) * 10 + 1
+                    : 0}{" "}
+                to{" "}
+                {activeTab === "active-users"
+                  ? Math.min(
+                      pagination.page * pagination.limit,
+                      pagination.total,
+                    )
+                  : (currentPage - 1) * 10 + displayData.length}{" "}
+                of{" "}
+                {activeTab === "active-users" ? pagination.total : plans.length}
               </div>
               <div className="flex items-center  divide-x divide-neutral-500">
                 <button
