@@ -1,14 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 import FilterModal from "../FilterModal";
 import { Plus } from "lucide-react";
+import {
+  getSubscriptions,
+  getSubscriptionStats,
+} from "../../api/subscriptions";
+
 function Subscriptions() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("active-users");
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
+
+  const [subscriptions, setSubscriptions] = useState([]);
+  const [stats, setStats] = useState({
+    activeSubscriptions: 0,
+    expired: 0,
+    autoRenewEnabled: 0,
+    monthlyRecurringRevenue: 0,
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 1,
+  });
+
   const [appliedFilters, setAppliedFilters] = useState({
     paymentType: {
       paid: false,
@@ -25,14 +47,51 @@ function Subscriptions() {
     },
   });
 
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === "active-users") {
+      fetchSubscriptions(currentPage);
+    }
+  }, [activeTab, currentPage]);
+
+  const fetchStats = async () => {
+    try {
+      const data = await getSubscriptionStats();
+      setStats(data);
+    } catch (err) {
+      console.error("Failed to fetch subscription stats", err);
+    }
+  };
+
+  const fetchSubscriptions = async (page) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await getSubscriptions(page, 10);
+      setSubscriptions(data.subscriptions);
+      setPagination(data.pagination);
+    } catch (err) {
+      console.error("Failed to fetch subscriptions", err);
+      setError("Failed to load subscriptions.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Metrics for different tabs
   const getMetrics = () => {
     if (activeTab === "active-users") {
       return [
-        { label: "Active Subscribers", value: "3,560" },
-        { label: "Premium Users", value: "2,310" },
-        { label: "Basic Users", value: "1,250" },
-        { label: "Monthly Revenue", value: "$23,100" },
+        { label: "Active Subscribers", value: stats.activeSubscriptions },
+        { label: "Expired", value: stats.expired },
+        { label: "Auto Renew Enabled", value: stats.autoRenewEnabled },
+        {
+          label: "Monthly Revenue",
+          value: `$${stats.monthlyRecurringRevenue}`,
+        },
       ];
     } else {
       return [
@@ -43,58 +102,6 @@ function Subscriptions() {
       ];
     }
   };
-
-  // Active users data
-  const activeUsersData = [
-    {
-      id: 1,
-      user: "John Doe",
-      plan: "Premium",
-      status: "Active",
-      amount: "$25",
-      purchasedDate: "Oct 5, 2025",
-    },
-    {
-      id: 2,
-      user: "Jane Smith",
-      plan: "Basic",
-      status: "Active",
-      amount: "$15",
-      purchasedDate: "Oct 4, 2025",
-    },
-    {
-      id: 3,
-      user: "Bob Johnson",
-      plan: "Premium",
-      status: "Active",
-      amount: "$25",
-      purchasedDate: "Oct 3, 2025",
-    },
-    {
-      id: 4,
-      user: "Alice Brown",
-      plan: "Basic",
-      status: "Active",
-      amount: "$15",
-      purchasedDate: "Oct 2, 2025",
-    },
-    {
-      id: 5,
-      user: "Charlie Wilson",
-      plan: "Premium",
-      status: "Active",
-      amount: "$25",
-      purchasedDate: "Oct 1, 2025",
-    },
-    {
-      id: 6,
-      user: "Diana Davis",
-      plan: "Basic",
-      status: "Active",
-      amount: "$15",
-      purchasedDate: "Sep 30, 2025",
-    },
-  ];
 
   // Plans data
   const plansData = [
@@ -122,35 +129,52 @@ function Subscriptions() {
   ];
 
   const getFilteredData = () => {
-    const data = activeTab === "active-users" ? activeUsersData : plansData;
+    if (activeTab === "active-users") {
+        return subscriptions;
+    } else {
+        return plansData.filter((item) => {
+            return (
+            item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.lastUpdated.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            item.status.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+        });
+    }
+  };
 
-    return data.filter((item) => {
-      if (activeTab === "active-users") {
-        return (
-          item.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.plan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.amount.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      } else {
-        return (
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.amount.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.lastUpdated.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.status.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
+  const currentData = getFilteredData();
+  const totalPages = activeTab === "active-users" ? pagination.totalPages : Math.ceil(currentData.length / 10);
+  // For plans (static), we still might need slicing if it grows, but for now let's assume it fits or slice it
+  const displayData = activeTab === "active-users" 
+    ? currentData 
+    : currentData.slice((currentPage - 1) * 10, (currentPage - 1) * 10 + 10);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
-  const filteredData = getFilteredData();
-  const totalPages = Math.ceil(filteredData.length / 10);
-  const startIndex = (currentPage - 1) * 10;
-  const endIndex = startIndex + 10;
-  const currentData = filteredData.slice(startIndex, endIndex);
-
   const renderTableContent = () => {
     if (activeTab === "active-users") {
+        if (isLoading) {
+            return (
+                <div className="flex justify-center items-center py-20">
+                    <svg className="animate-spin h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            )
+        }
+        if (error) {
+            return <div className="text-center py-10 text-red-500">{error}</div>
+        }
       return (
         <div className="overflow-x-auto">
           <table className="w-full border-separate border-spacing-0">
@@ -177,13 +201,13 @@ function Subscriptions() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentData.map((user) => (
+              {displayData.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                     {user.user}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                    {user.plan}
+                    {user.planName}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                     {user.status}
@@ -192,7 +216,7 @@ function Subscriptions() {
                     {user.amount}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                    {user.purchasedDate}
+                    {formatDate(user.purchasedDate)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <button
@@ -204,6 +228,13 @@ function Subscriptions() {
                   </td>
                 </tr>
               ))}
+              {displayData.length === 0 && (
+                  <tr>
+                      <td colSpan="6" className="text-center py-8 text-gray-500">
+                          No subscriptions found
+                      </td>
+                  </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -232,7 +263,7 @@ function Subscriptions() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {currentData.map((plan) => (
+              {displayData.map((plan) => (
                 <tr key={plan.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
                     {plan.name}
@@ -423,7 +454,17 @@ function Subscriptions() {
             {/* Pagination */}
             <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                Showing {startIndex + 1} of {filteredData.length}
+                Showing {activeTab === "active-users" 
+                    ? (subscriptions.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0)
+                    : (displayData.length > 0 ? (currentPage - 1) * 10 + 1 : 0)
+                } 
+                {" "}to{" "} 
+                {activeTab === "active-users"
+                    ? Math.min(pagination.page * pagination.limit, pagination.total)
+                    : (currentPage - 1) * 10 + displayData.length
+                } 
+                {" "}of{" "} 
+                {activeTab === "active-users" ? pagination.total : plansData.length}
               </div>
               <div className="flex items-center  divide-x divide-neutral-500">
                 <button
@@ -471,7 +512,7 @@ function Subscriptions() {
           </div>
 
           {/* Empty State */}
-          {getFilteredData().length === 0 && (
+          {displayData.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <svg
                 className="mx-auto h-12 w-12 text-gray-400"
