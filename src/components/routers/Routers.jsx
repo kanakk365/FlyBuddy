@@ -21,6 +21,8 @@ import Login from "../pages/Login";
 import OTP from "../pages/OTP";
 import Success from "../pages/Success";
 import Profile from "../pages/Profile";
+import Issues from "../pages/Issues";
+import IssueDetails from "../pages/IssueDetails";
 import { Routes, Route } from "react-router-dom";
 function Routers() {
   return (
@@ -59,6 +61,8 @@ function Routers() {
         <Route path="/success" element={<Success />} />
         <Route path="/products" element={<Products />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/issues" element={<Issues />} />
+        <Route path="/issue-details" element={<IssueDetails />} />
       </Routes>
     </div>
   );

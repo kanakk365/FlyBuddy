@@ -10,6 +10,7 @@ import {
   Calendar,
   BarChart3,
   ChevronRight,
+  AlertCircle,
 } from "lucide-react";
 
 function Sidebar({ collapsed, onToggleCollapse }) {
@@ -28,6 +29,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
     },
     { name: "Subscriptions", icon: "calendar", path: "/subscriptions" },
     { name: "Reports", icon: "chart", path: "/reports" },
+    { name: "Issues", icon: "alert", path: "/issues" },
   ];
 
   const getIcon = (iconName) => {
@@ -39,6 +41,7 @@ function Sidebar({ collapsed, onToggleCollapse }) {
       document: <FileText className="w-5 h-5" />,
       calendar: <Calendar className="w-5 h-5" />,
       chart: <BarChart3 className="w-5 h-5" />,
+      alert: <AlertCircle className="w-5 h-5" />,
     };
     return icons[iconName] || null;
   };
