@@ -1,25 +1,35 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import logo from '../../assets/logo.png'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo.png";
+import useAuthStore from "../../store/useAuthStore";
 
 function Login() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const { login, isLoading, error } = useAuthStore();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     // Handle login logic here
-    console.log('Login attempt:', { email, password })
-    // Navigate to OTP page after login attempt
-    navigate('/otp')
-  }
+    console.log("Login attempt:", { email, password });
+
+    // Call login action from store
+    const success = await login(email, password);
+    if (success) {
+      // Navigate to Home page after successful login (OTP flow temporarily removed)
+      navigate("/home");
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{
-      background: 'linear-gradient(to bottom, #ABBCD6, #B5D8E7, #ABBCD6)'
-    }}>
+    <div
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{
+        background: "linear-gradient(to bottom, #ABBCD6, #B5D8E7, #ABBCD6)",
+      }}
+    >
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
         {/* Logo and Brand */}
         <div className="text-center mb-6">
@@ -34,9 +44,19 @@ function Login() {
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Error Message */}
+          {error && (
+            <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
+              {error}
+            </div>
+          )}
+
           {/* Email Field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Email Id
             </label>
             <input
@@ -46,22 +66,27 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none transition-all duration-200"
               placeholder="Enter your email"
+              required
             />
           </div>
 
           {/* Password Field */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Password
             </label>
             <div className="relative">
               <input
-                type={showPassword ? 'text' : 'password'}
+                type={showPassword ? "text" : "password"}
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full px-3 py-2 pr-10 text-sm border border-gray-300 rounded-lg focus:outline-none transition-all duration-200"
                 placeholder="Enter your password"
+                required
               />
               <button
                 type="button"
@@ -106,24 +131,49 @@ function Login() {
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full text-white font-semibold text-sm py-3 px-4 rounded-lg transition-all duration-200 transform focus:outline-none  mt-6 cursor-pointer "
+            disabled={isLoading}
+            className="w-full text-white font-semibold text-sm py-3 px-4 rounded-lg transition-all duration-200 transform focus:outline-none  mt-6 cursor-pointer flex justify-center items-center"
             style={{
-              background: '#D597C1',
-              boxShadow: '0 2px 8px rgba(213, 151, 193, 0.4)'
+              background: "#D597C1",
+              boxShadow: "0 2px 8px rgba(213, 151, 193, 0.4)",
+              opacity: isLoading ? 0.7 : 1,
             }}
             onMouseEnter={(e) => {
-              e.target.style.background = '#C485B0'
+              if (!isLoading) e.target.style.background = "#C485B0";
             }}
             onMouseLeave={(e) => {
-              e.target.style.background = '#D597C1'
+              if (!isLoading) e.target.style.background = "#D597C1";
             }}
           >
-            Sign In
+            {isLoading ? (
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
