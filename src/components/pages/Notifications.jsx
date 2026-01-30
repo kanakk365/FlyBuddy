@@ -87,6 +87,10 @@ function Notifications() {
     navigate("/notification-details");
   };
 
+  const handleEditNotification = (notification) => {
+    navigate("/create-notification", { state: { notification } });
+  };
+
   const handleCreateNotification = () => {
     console.log("Creating new notification...");
     navigate("/create-notification");
@@ -201,8 +205,7 @@ function Notifications() {
             </div>
           )}
 
-          {/* Notifications Table */
-          }
+          {/* Notifications Table */}
           <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden p-4">
             <div className="overflow-x-auto">
               <table className="w-full border-separate border-spacing-0">
@@ -270,14 +273,24 @@ function Notifications() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() =>
-                              handleViewNotification(notification.id)
-                            }
-                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
-                          >
-                            View
-                          </button>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() =>
+                                handleEditNotification(notification)
+                              }
+                              className="px-4 py-1.5 text-black rounded-full text-sm bg-yellow-200 cursor-pointer "
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleViewNotification(notification.id)
+                              }
+                              className="px-4 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
+                            >
+                              View
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
