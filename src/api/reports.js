@@ -20,3 +20,10 @@ export const getRevenueReports = async (period) => {
   );
   return response.data;
 };
+
+export const getDashboardData = async (filter = "today") => {
+  const response = await axiosInstance.get(
+    `/admin/reports/dashboard?filter=${filter}`,
+  );
+  return response.data;
+};

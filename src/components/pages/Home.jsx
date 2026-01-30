@@ -10,168 +10,106 @@ import {
 } from "lucide-react";
 import { ChartAreaLinear } from "../ui/area-chart";
 
+import { getDashboardData } from "../../api/reports";
+import { format } from "date-fns";
+import { useEffect } from "react";
+
 function Home() {
   const [currentView, setCurrentView] = useState("today");
 
-  const todayData = {
-    chartData: [
-      { day: "Jan 1", value: 20 },
-      { day: "Jan 4", value: 60 },
-      { day: "Jan 8", value: 40 },
-      { day: "Jan 12", value: 120 },
-      { day: "Jan 16", value: 110 },
-      { day: "Jan 20", value: 180 },
-      { day: "Jan 24", value: 160 },
-      { day: "Jan 27", value: 130 },
-      { day: "Jan 31", value: 170 },
-      { day: "Feb 1", value: 220 },
-    ],
-    metricsData: [
-      {
-        title: "Total users",
-        value: "1,250",
-        change: "28.4%",
-        changeType: "increase",
-        icon: "users",
-      },
-      {
-        title: "Tickets Uploaded",
-        value: "320",
-        change: "12.6%",
-        changeType: "decrease",
-        icon: "ticket",
-      },
-      {
-        title: "Airport Upload - No. of Users",
-        value: "194",
-        change: "3.1%",
-        changeType: "increase",
-        icon: "calendar",
-      },
-      {
-        title: "Premium Subscribers",
-        value: "2.3K",
-        change: "11.3%",
-        changeType: "increase",
-        icon: "star",
-      },
-    ],
-    popularRoutes: [
-      { country: "Dubai", flag: "ae", travelers: "54 travellers" },
-      { country: "United Kingdom", flag: "gb", travelers: "14 travellers" },
-      { country: "USA", flag: "us", travelers: "12 travellers" },
-      { country: "France", flag: "fr", travelers: "28 travellers" },
-      { country: "Germany", flag: "de", travelers: "22 travellers" },
-      { country: "Japan", flag: "jp", travelers: "18 travellers" },
-      { country: "Australia", flag: "au", travelers: "15 travellers" },
-      { country: "Canada", flag: "ca", travelers: "13 travellers" },
-      { country: "Italy", flag: "it", travelers: "11 travellers" },
-      { country: "Spain", flag: "es", travelers: "9 travellers" },
-      { country: "Singapore", flag: "sg", travelers: "8 travellers" },
-      { country: "Thailand", flag: "th", travelers: "7 travellers" },
-    ],
-    newUsers: [
-      {
-        name: "Rohan Mehta",
-        email: "rohan24@...",
-        joined: "Oct 6",
-        plan: "Free",
-      },
-      {
-        name: "Priya Agarwal",
-        email: "priya88@...",
-        joined: "Oct 6",
-        plan: "Premium",
-      },
-      {
-        name: "Sneha Iyer",
-        email: "sneha@...",
-        joined: "Oct 5",
-        plan: "Premium",
-      },
-    ],
-  };
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
 
-  const totalData = {
-    chartData: [
-      { day: "Jan 1", value: 100 },
-      { day: "Jan 4", value: 220 },
-      { day: "Jan 8", value: 260 },
-      { day: "Jan 12", value: 320 },
-      { day: "Jan 16", value: 380 },
-      { day: "Jan 20", value: 410 },
-      { day: "Jan 24", value: 460 },
-      { day: "Jan 27", value: 520 },
-      { day: "Jan 31", value: 580 },
-      { day: "Feb 1", value: 640 },
-    ],
-    metricsData: [
-      {
-        title: "Total users",
-        value: "12,450",
-        change: "15.2%",
-        changeType: "increase",
-        icon: "users",
-      },
-      {
-        title: "Tickets Uploaded",
-        value: "3,200",
-        change: "8.9%",
-        changeType: "increase",
-        icon: "ticket",
-      },
-      {
-        title: "Airport Upload - No. of Users",
-        value: "1,940",
-        change: "22.1%",
-        changeType: "increase",
-        icon: "calendar",
-      },
-      {
-        title: "Premium Subscribers",
-        value: "23.1K",
-        change: "18.7%",
-        changeType: "increase",
-        icon: "star",
-      },
-    ],
-    popularRoutes: [
-      { country: "USA", flag: "us", travelers: "1,245 travellers" },
-      { country: "United Kingdom", flag: "gb", travelers: "892 travellers" },
-      { country: "Dubai", flag: "ae", travelers: "756 travellers" },
-      { country: "France", flag: "fr", travelers: "634 travellers" },
-      { country: "Germany", flag: "de", travelers: "523 travellers" },
-      { country: "Japan", flag: "jp", travelers: "445 travellers" },
-      { country: "Australia", flag: "au", travelers: "389 travellers" },
-      { country: "Canada", flag: "ca", travelers: "312 travellers" },
-      { country: "Italy", flag: "it", travelers: "298 travellers" },
-      { country: "Spain", flag: "es", travelers: "267 travellers" },
-      { country: "Singapore", flag: "sg", travelers: "198 travellers" },
-      { country: "Thailand", flag: "th", travelers: "156 travellers" },
-    ],
-    newUsers: [
-      {
-        name: "Arun Kumar",
-        email: "arun.kumar@...",
-        joined: "Sep 15",
-        plan: "Premium",
-      },
-      {
-        name: "Maya Singh",
-        email: "maya.singh@...",
-        joined: "Sep 12",
-        plan: "Free",
-      },
-      {
-        name: "Vikram Rao",
-        email: "vikram.rao@...",
-        joined: "Sep 10",
-        plan: "Premium",
-      },
-    ],
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Map 'total' view to API's expected filter if needed,
+        // assuming API accepts 'today' and 'total' (or maybe 'all'? user request used 'total')
+        const data = await getDashboardData(currentView);
+        setDashboardData(data);
+      } catch (error) {
+        console.error("Failed to fetch dashboard data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const currentData = currentView === "today" ? todayData : totalData;
+    fetchData();
+  }, [currentView]);
+
+  if (loading || !dashboardData) {
+    return (
+      <MainLayout>
+        <div className="p-6 bg-[#f6f6f6] h-full flex items-center justify-center">
+          <p>Loading...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const {
+    kpis,
+    userGrowthEngagement,
+    popularRoutes: apiPopularRoutes,
+    newUsers: apiNewUsers,
+  } = dashboardData;
+
+  const metricsData = [
+    {
+      title: "Total users",
+      value: kpis?.totalUsers?.value || 0,
+      change: `${kpis?.totalUsers?.change || 0}%`,
+      changeType: kpis?.totalUsers?.isIncrease ? "increase" : "decrease",
+      icon: "users",
+    },
+    {
+      title: "Tickets Uploaded",
+      value: kpis?.ticketsUploaded?.value || 0,
+      change: `${kpis?.ticketsUploaded?.change || 0}%`,
+      changeType: kpis?.ticketsUploaded?.isIncrease ? "increase" : "decrease",
+      icon: "ticket",
+    },
+    {
+      title: "Airport Upload - No. of Users",
+      value: kpis?.airportUploadUsers?.value || 0,
+      change: `${kpis?.airportUploadUsers?.change || 0}%`,
+      changeType: kpis?.airportUploadUsers?.isIncrease
+        ? "increase"
+        : "decrease",
+      icon: "calendar",
+    },
+    {
+      title: "Premium Subscribers",
+      value: kpis?.premiumSubscribers?.value || 0,
+      change: `${kpis?.premiumSubscribers?.change || 0}%`,
+      changeType: kpis?.premiumSubscribers?.isIncrease
+        ? "increase"
+        : "decrease",
+      icon: "star",
+    },
+  ];
+
+  const chartData =
+    userGrowthEngagement?.chartData?.map((item) => ({
+      day: format(new Date(item.date), "MMM d"),
+      value: item.value,
+    })) || [];
+
+  const popularRoutes =
+    apiPopularRoutes?.map((route) => ({
+      country: route.destination,
+      flag: "us", // Default flag as API doesn't return country code. In real app, we might need a mapping or backend change.
+      travelers: `${route.travellers} travellers`,
+    })) || [];
+
+  const newUsers =
+    apiNewUsers?.map((user) => ({
+      name: user.name,
+      email: user.email,
+      joined: format(new Date(user.joinedOn), "MMM d"),
+      plan: user.plan,
+    })) || [];
 
   const getFlagIcon = (countryCode) => {
     const flags = {
@@ -313,7 +251,7 @@ function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {currentData.metricsData.map((metric, index) => (
+            {metricsData.map((metric, index) => (
               <div
                 key={index}
                 className="bg-white p-6 rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7]"
@@ -356,7 +294,7 @@ function Home() {
           {/* Charts and Tables Row */}
           <div className="grid grid-cols-1 lg:grid-cols-[69%_29%] gap-6 mb-8">
             {/* Area Chart */}
-            <ChartAreaLinear data={currentData.chartData} />
+            <ChartAreaLinear data={chartData} />
 
             {/* Popular Routes */}
             <div className="bg-white p-6 pr-2 rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] ">
@@ -365,7 +303,7 @@ function Home() {
               </h3>
               <div className=" h-80 w-full overflow-y-auto overflow-x-hidden scrollbar-thin ">
                 <div className="space-y-0 pr-4">
-                  {currentData.popularRoutes.map((route, index) => (
+                  {popularRoutes.map((route, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0"
@@ -395,10 +333,7 @@ function Home() {
                 <h3 className="text-lg font-semibold text-gray-900">
                   New Users
                 </h3>
-                <button
-                  className=" py-1.5 text-black px-6 rounded-full text-sm bg-[#B8C8E0]"
-                 
-                >
+                <button className=" py-1.5 text-black px-6 rounded-full text-sm bg-[#B8C8E0]">
                   View all
                 </button>
               </div>
@@ -422,7 +357,7 @@ function Home() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentData.newUsers.map((user, index) => (
+                  {newUsers.map((user, index) => (
                     <tr key={index}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {user.name}
