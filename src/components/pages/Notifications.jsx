@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 import FilterModal from "../FilterModal";
-import { Plus } from "lucide-react";
+import { Plus, Ticket, Crown, Plane, Bell } from "lucide-react";
+import { getNotifications, getNotificationFeed } from "../../api/notifications";
+import { format } from "date-fns";
 
 function Notifications() {
   const navigate = useNavigate();
@@ -25,96 +27,60 @@ function Notifications() {
     },
   });
 
-  const notificationsData = [
-    {
-      id: 1,
-      title: "Premium Offer",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Sent",
-    },
-    {
-      id: 2,
-      title: "New Feature Launch",
-      audience: "All Users",
-      date: "Oct 6",
-      status: "Scheduled",
-    },
-    {
-      id: 3,
-      title: "Reminder: Upload Ticket",
-      audience: "Free Users",
-      date: "Oct 5",
-      status: "Sent",
-    },
-    {
-      id: 4,
-      title: "New Feature Launch",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Scheduled",
-    },
-    {
-      id: 5,
-      title: "Reminder: Upload Ticket",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Scheduled",
-    },
-    {
-      id: 6,
-      title: "New Feature Launch",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Sent",
-    },
-    {
-      id: 7,
-      title: "Reminder: Upload Ticket",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Scheduled",
-    },
-    {
-      id: 8,
-      title: "Reminder: Upload Ticket",
-      audience: "Premium Users",
-      date: "Oct 6",
-      status: "Scheduled",
-    },
-  ];
-
-  const filteredNotifications = notificationsData.filter((notification) => {
-    // Status filter
-    const statusFilter =
-      appliedFilters.status.sent || appliedFilters.status.scheduled;
-    const matchesStatus =
-      !statusFilter ||
-      (appliedFilters.status.sent && notification.status === "Sent") ||
-      (appliedFilters.status.scheduled && notification.status === "Scheduled");
-
-    // Audience filter
-    const audienceFilter =
-      appliedFilters.audience.all ||
-      appliedFilters.audience.premium ||
-      appliedFilters.audience.free;
-    const matchesAudience =
-      !audienceFilter ||
-      (appliedFilters.audience.all && notification.audience === "All Users") ||
-      (appliedFilters.audience.premium &&
-        notification.audience === "Premium Users") ||
-      (appliedFilters.audience.free && notification.audience === "Free Users");
-
-    return matchesStatus && matchesAudience;
+  const [notifications, setNotifications] = useState([]);
+  const [feed, setFeed] = useState({ unreadCount: 0, items: [] });
+  const [loading, setLoading] = useState(true);
+  const [meta, setMeta] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
   });
 
-  const totalPages = Math.ceil(filteredNotifications.length / 10);
-  const startIndex = (currentPage - 1) * 10;
-  const endIndex = startIndex + 10;
-  const currentNotifications = filteredNotifications.slice(
-    startIndex,
-    endIndex,
-  );
+  const fetchNotifications = async (page) => {
+    try {
+      const data = await getNotifications(page);
+      setNotifications(data.data);
+      setMeta(data.meta);
+    } catch (error) {
+      console.error("Failed to fetch notifications:", error);
+    }
+  };
+
+  const fetchFeed = async () => {
+    try {
+      const data = await getNotificationFeed();
+      setFeed(data);
+    } catch (error) {
+      console.error("Failed to fetch feed:", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchNotifications(currentPage), fetchFeed()]);
+      setLoading(false);
+    };
+    loadData();
+  }, [currentPage]);
+
+  const getIcon = (iconName) => {
+    switch (iconName) {
+      case "ticket":
+        return <Ticket className="w-5 h-5 text-blue-500" />;
+      case "crown":
+        return <Crown className="w-5 h-5 text-yellow-500" />;
+      case "plane":
+        return <Plane className="w-5 h-5 text-green-500" />;
+      default:
+        return <Bell className="w-5 h-5 text-gray-500" />;
+    }
+  };
+
+  // Client-side filtering is temporarily disabled or needs to be moved to server-side
+  // For now, we display what the API returns
+  const currentNotifications = notifications;
 
   const handleViewNotification = (notificationId) => {
     console.log("Viewing notification:", notificationId);
@@ -194,7 +160,49 @@ function Notifications() {
             </div>
           </div>
 
-          {/* Notifications Table */}
+          {/* Recent Activity Feed */}
+          {feed.items.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Recent Activity{" "}
+                {feed.unreadCount > 0 && (
+                  <span className="ml-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
+                    {feed.unreadCount} new
+                  </span>
+                )}
+              </h2>
+              <div className="grid gap-4 md:grid-cols-3">
+                {feed.items.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-start space-x-3"
+                  >
+                    <div className="p-2 bg-gray-50 rounded-lg">
+                      {getIcon(item.icon)}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {item.title}
+                      </p>
+                      {item.description && (
+                        <p className="text-xs text-gray-500 mt-1">
+                          {item.description}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-2">
+                        {item.createdAt
+                          ? format(new Date(item.createdAt), "MMM d, h:mm a")
+                          : "Just now"}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Notifications Table */
+          }
           <div className="bg-white rounded-xl shadow-[0px_4px_12px_0px_rgba(0,0,0,0.05)] border-[#e7e7e7] overflow-hidden p-4">
             <div className="overflow-x-auto">
               <table className="w-full border-separate border-spacing-0">
@@ -218,47 +226,62 @@ function Notifications() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentNotifications.map((notification, index) => (
-                    <tr
-                      key={notification.id}
-                      className={`hover:bg-gray-50 ${
-                        index === 0 ? "pt-4" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {notification.title}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {notification.audience}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {notification.date}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        <span
-                          className={`inline-flex items-center px-4 py-1 rounded-full text-sm ${
-                            notification.status === "Sent"
-                              ? "bg-green-100 text-green-800"
-                              : notification.status === "Scheduled"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {notification.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() =>
-                            handleViewNotification(notification.id)
-                          }
-                          className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
-                        >
-                          View
-                        </button>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-4 text-center">
+                        Loading...
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    currentNotifications.map((notification, index) => (
+                      <tr
+                        key={notification.id}
+                        className={`hover:bg-gray-50 ${
+                          index === 0 ? "pt-4" : ""
+                        }`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {notification.title}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 capitalize">
+                          {notification.audience
+                            ?.replace("_", " ")
+                            .toLowerCase()}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {notification.deliverAt
+                            ? format(
+                                new Date(notification.deliverAt),
+                                "MMM d, yyyy",
+                              )
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          <span
+                            className={`inline-flex items-center px-4 py-1 rounded-full text-sm capitalize ${
+                              notification.status === "sent"
+                                ? "bg-green-100 text-green-800"
+                                : notification.status === "scheduled"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {notification.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <button
+                            onClick={() =>
+                              handleViewNotification(notification.id)
+                            }
+                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -266,7 +289,7 @@ function Notifications() {
             {/* Pagination */}
             <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                Showing {startIndex + 1} of {filteredNotifications.length}
+                Showing {(meta.page - 1) * meta.limit + 1} of {meta.total}
               </div>
               <div className="flex items-center  divide-x divide-neutral-500">
                 <button
@@ -290,9 +313,9 @@ function Notifications() {
                 </button>
                 <button
                   onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    setCurrentPage(Math.min(meta.totalPages, currentPage + 1))
                   }
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === meta.totalPages}
                   className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
                 >
                   <svg
