@@ -3,11 +3,24 @@ import { useNavigate } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 import FilterModal from "../FilterModal";
 import { Plus } from "lucide-react";
-import { getRoles } from "../../api/roles";
+import { getRoles, deleteRole } from "../../api/roles";
 import { format } from "date-fns";
 
 function RolesAndPermissions() {
   const navigate = useNavigate();
+
+  const handleDeleteRole = async (id) => {
+    if (window.confirm("Are you sure you want to delete this role?")) {
+      try {
+        await deleteRole(id);
+        // Refresh list
+        fetchRoles(currentPage);
+      } catch (error) {
+        console.error("Failed to delete role:", error);
+        alert("Failed to delete role");
+      }
+    }
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
@@ -181,12 +194,28 @@ function RolesAndPermissions() {
                             : "-"}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <button
-                            onClick={() => handleViewRole(role.id)}
-                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
-                          >
-                            View
-                          </button>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() =>
+                                navigate("/create-role", { state: { role } })
+                              }
+                              className="px-4 py-1.5 text-black rounded-full text-sm bg-yellow-200 cursor-pointer"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleViewRole(role.id)}
+                              className="px-4 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
+                            >
+                              View
+                            </button>
+                            <button
+                              onClick={() => handleDeleteRole(role.id)}
+                              className="px-4 py-1.5 text-white rounded-full text-sm bg-red-400 cursor-pointer"
+                            >
+                              Delete
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))
