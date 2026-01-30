@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import MainLayout from "../common/MainLayout";
 import FilterModal from "../FilterModal";
 import { Plus } from "lucide-react";
+import { getRoles } from "../../api/roles";
+import { format } from "date-fns";
 
 function RolesAndPermissions() {
   const navigate = useNavigate();
@@ -21,49 +23,36 @@ function RolesAndPermissions() {
     },
   });
 
-  const rolesData = [
-    {
-      id: 1,
-      memberName: "Rohan Mehra",
-      roleName: "Super Admin",
-      description: "Full access to all modules",
-      createdOn: "Oct 1",
-    },
-    {
-      id: 2,
-      memberName: "Sia Sharma",
-      roleName: "Manager",
-      description: "Manage Bookings, Users",
-      createdOn: "Oct 2",
-    },
-    {
-      id: 3,
-      memberName: "Lily Singh",
-      roleName: "Support",
-      description: "Can view and verify tickets",
-      createdOn: "Oct 3",
-    },
-  ];
-
-  const filteredRoles = rolesData.filter((role) => {
-    // Role Name filter
-    const roleNameFilter =
-      appliedFilters.roleName.admin ||
-      appliedFilters.roleName.superAdmin ||
-      appliedFilters.roleName.manager;
-    const matchesRoleName =
-      !roleNameFilter ||
-      (appliedFilters.roleName.admin && role.roleName === "Admin") ||
-      (appliedFilters.roleName.superAdmin && role.roleName === "Super Admin") ||
-      (appliedFilters.roleName.manager && role.roleName === "Manager");
-
-    return matchesRoleName;
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [meta, setMeta] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
   });
 
-  const totalPages = Math.ceil(filteredRoles.length / 10);
-  const startIndex = (currentPage - 1) * 10;
-  const endIndex = startIndex + 10;
-  const currentRoles = filteredRoles.slice(startIndex, endIndex);
+  const fetchRoles = async (page) => {
+    try {
+      setLoading(true);
+      const data = await getRoles(page);
+      setRoles(data.data);
+      setMeta(data.meta);
+    } catch (error) {
+      console.error("Failed to fetch roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRoles(currentPage);
+  }, [currentPage]);
+
+  // Client-side filtering logic is removed as we are using server-side pagination
+  // Typically filters should be passed to the API.
+  // For now, we display what the API returns for the current page.
+  const currentRoles = roles;
 
   const handleViewRole = (roleId) => {
     console.log("Viewing role:", roleId);
@@ -146,7 +135,7 @@ function RolesAndPermissions() {
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider rounded-tl-xl">
-                      Member Name
+                      Member Name / Email
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                       Role Name
@@ -163,35 +152,45 @@ function RolesAndPermissions() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentRoles.map((role, index) => (
-                    <tr
-                      key={role.id}
-                      className={`hover:bg-gray-50 ${
-                        index === 0 ? "pt-4" : ""
-                      }`}
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {role.memberName}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {role.roleName}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-neutral-500">
-                        {role.description}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {role.createdOn}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <button
-                          onClick={() => handleViewRole(role.id)}
-                          className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
-                        >
-                          View
-                        </button>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-4 text-center">
+                        Loading...
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    currentRoles.map((role, index) => (
+                      <tr
+                        key={role.id}
+                        className={`hover:bg-gray-50 ${
+                          index === 0 ? "pt-4" : ""
+                        }`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {role.name || role.email || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500 capitalize">
+                          {role.role}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-neutral-500">
+                          {role.description || "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {role.createdAt
+                            ? format(new Date(role.createdAt), "MMM d, yyyy")
+                            : "-"}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <button
+                            onClick={() => handleViewRole(role.id)}
+                            className="px-8 py-1.5 text-black rounded-full text-sm bg-[#acbed7] cursor-pointer "
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>
@@ -199,7 +198,7 @@ function RolesAndPermissions() {
             {/* Pagination */}
             <div className="bg-white px-6 py-4 border-t border-gray-200 flex items-center justify-between">
               <div className="text-sm text-gray-500">
-                Showing {startIndex + 1} of {filteredRoles.length}
+                Showing {(meta.page - 1) * meta.limit + 1} of {meta.total}
               </div>
               <div className="flex items-center  divide-x divide-neutral-500">
                 <button
@@ -223,9 +222,9 @@ function RolesAndPermissions() {
                 </button>
                 <button
                   onClick={() =>
-                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    setCurrentPage(Math.min(meta.totalPages, currentPage + 1))
                   }
-                  disabled={currentPage === totalPages}
+                  disabled={currentPage === meta.totalPages}
                   className="p-2 rounded-r-md text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed bg-[#ABBCD6]"
                 >
                   <svg
