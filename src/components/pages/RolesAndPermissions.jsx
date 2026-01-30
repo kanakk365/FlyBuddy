@@ -6,7 +6,7 @@ import { Plus } from "lucide-react";
 
 function RolesAndPermissions() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [appliedFilters, setAppliedFilters] = useState({
@@ -46,12 +46,6 @@ function RolesAndPermissions() {
   ];
 
   const filteredRoles = rolesData.filter((role) => {
-    // Search filter
-    const matchesSearch =
-      role.memberName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.roleName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.description.toLowerCase().includes(searchTerm.toLowerCase());
-
     // Role Name filter
     const roleNameFilter =
       appliedFilters.roleName.admin ||
@@ -63,7 +57,7 @@ function RolesAndPermissions() {
       (appliedFilters.roleName.superAdmin && role.roleName === "Super Admin") ||
       (appliedFilters.roleName.manager && role.roleName === "Manager");
 
-    return matchesSearch && matchesRoleName;
+    return matchesRoleName;
   });
 
   const totalPages = Math.ceil(filteredRoles.length / 10);
@@ -115,30 +109,6 @@ function RolesAndPermissions() {
                   <Plus className="w-4 h-4 mr-2" />
                   Create Role
                 </button>
-
-                {/* Search Bar */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Search"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-64 pl-10 pr-4 py-1.5 border border-neutral-300 focus:outline-neutral-300 rounded-lg  focus:border-transparent"
-                  />
-                  <svg
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
-                </div>
 
                 {/* Filters Button */}
                 <button
